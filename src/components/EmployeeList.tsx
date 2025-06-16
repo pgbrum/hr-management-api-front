@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from 'react';
 
 type Employee = {
-  id: number;
+  id: string;
   name: string;
-  role: string;
-  department: string;
+  email: string; 
+  position: string | null;
+  benefits: string[];
 };
 
 const EmployeeList: React.FC = () => {
@@ -14,9 +15,9 @@ const EmployeeList: React.FC = () => {
   useEffect(() => {
     const fetchEmployees = async () => {
       try {
-        const response = await fetch('http://localhost:3000/employees');
+        const response = await fetch('http://localhost:3333/employees');
         const data = await response.json();
-        setEmployees(data);
+        setEmployees(data.employees); // <- Aqui está o ajuste principal
       } catch (error) {
         console.error('Erro ao buscar funcionários:', error);
       } finally {
@@ -37,8 +38,9 @@ const EmployeeList: React.FC = () => {
         <tr>
           <th>ID</th>
           <th>Nome</th>
+          <th>Email</th>
           <th>Cargo</th>
-          <th>Departamento</th>
+          <th>Benefícios</th>
         </tr>
       </thead>
       <tbody>
@@ -46,8 +48,9 @@ const EmployeeList: React.FC = () => {
           <tr key={employee.id}>
             <td>{employee.id}</td>
             <td>{employee.name}</td>
-            <td>{employee.role}</td>
-            <td>{employee.department}</td>
+            <td>{employee.email}</td>
+            <td>{employee.position ?? 'Sem cargo'}</td>
+            <td>{employee.benefits.length ? employee.benefits.join(', ') : 'Nenhum'}</td>
           </tr>
         ))}
       </tbody>
@@ -55,4 +58,4 @@ const EmployeeList: React.FC = () => {
   );
 };
 
-export default EmployeeList;
+export default EmployeeList;
