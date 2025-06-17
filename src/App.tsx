@@ -1,16 +1,14 @@
 import React from 'react';
-import logo from './logo.svg';
 import './App.css';
-import EmployeeList from './components/EmployeeList';
-import PositionList from './components/PositionsList';
-import BenefitsList from './components/BenefitsList';
+import CreateAdminForm from './components/CreateAdminForm';
+import Login from './components/Login';
+
 
 function App() {
   return (
     <div>
-      <EmployeeList />
-      <PositionList />
-      <BenefitsList/>
+      <CreateAdminForm/>
+      <Login/>
     </div>
   );
 }

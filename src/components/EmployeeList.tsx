@@ -1,10 +1,16 @@
 import React, { useEffect, useState } from 'react';
 
+type Position = {
+  id: string;
+  title: string;
+  salary: number;
+};
+
 type Employee = {
   id: string;
   name: string;
-  email: string; 
-  position: string | null;
+  email: string;
+  position: Position | null;
   benefits: string[];
 };
 
@@ -17,7 +23,7 @@ const EmployeeList: React.FC = () => {
       try {
         const response = await fetch('http://localhost:3333/employees');
         const data = await response.json();
-        setEmployees(data.employees); // <- Aqui está o ajuste principal
+        setEmployees(data.employees);
       } catch (error) {
         console.error('Erro ao buscar funcionários:', error);
       } finally {
@@ -49,7 +55,7 @@ const EmployeeList: React.FC = () => {
             <td>{employee.id}</td>
             <td>{employee.name}</td>
             <td>{employee.email}</td>
-            <td>{employee.position ?? 'Sem cargo'}</td>
+            <td>{employee.position ? employee.position.title : 'Sem cargo'}</td>
             <td>{employee.benefits.length ? employee.benefits.join(', ') : 'Nenhum'}</td>
           </tr>
         ))}

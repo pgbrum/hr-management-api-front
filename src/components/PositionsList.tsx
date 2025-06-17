@@ -17,7 +17,7 @@ const PositionList: React.FC = () => {
         const data = await response.json();
         setPositions(data.positions); // <- Aqui está o ajuste principal
       } catch (error) {
-        console.error('Erro ao buscar funcionários:', error);
+        console.error('Erro ao buscar cargos:', error);
       } finally {
         setLoading(false);
       }
