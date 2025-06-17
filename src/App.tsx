@@ -1,13 +1,12 @@
-import React from 'react';
 import './App.css';
-import CreateAdminForm from './components/CreateAdminForm';
-import Login from './components/Login';
+import Login from './components/Login/Login';
+import MainRoutes from './components/MainRoutes';
 
 
 function App() {
   return (
     <div>
-      <CreateAdminForm/>
+      {/* <MainRoutes/> */}
       <Login/>
     </div>
   );
