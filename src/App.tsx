@@ -6,8 +6,8 @@ import MainRoutes from './components/MainRoutes';
 function App() {
   return (
     <div>
-      {/* <MainRoutes/> */}
-      <Login/>
+      <MainRoutes/>
+      {/* <Login/> */}
     </div>
   );
 }
