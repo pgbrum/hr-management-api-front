@@ -1,0 +1,25 @@
+/* src/components/layout/Footer/Footer.module.css */
+
+.footer {
+  background-color: #ffffff; /* Fundo branco, igual ao header */
+  padding: 1.5rem 0; /* Um pouco mais de padding vertical para dar peso */
+  margin-top: auto; /* Truque para empurrar o footer para o final da página */
+  border-top: 1px solid #e5e7eb; /* Borda SUPERIOR, o inverso do header */
+  width: 100%;
+}
+
+/* Usamos a mesma classe de container para garantir alinhamento perfeito com o header */
+.container {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 24px;
+  display: flex;
+  justify-content: center; /* Centraliza o conteúdo */
+  align-items: center;
+}
+
+.text {
+  font-size: 0.875rem; /* Um pouco menor que o texto principal */
+  color: #6b7280; /* Cor de texto secundária, mais suave */
+  margin: 0; /* Remove margem padrão do parágrafo */
+}

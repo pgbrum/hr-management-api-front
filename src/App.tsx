@@ -7,6 +7,7 @@ import Header from './components/layout/Header/Header';
 
 // Componente que gerencia as rotas
 import { AppRoutes } from './Routes';
+import Footer from './components/layout/Footer/Footer';
 
 function App() {
   return (
@@ -17,6 +18,7 @@ function App() {
           {/* O roteamento agora é gerenciado pelo componente AppRoutes */}
           <AppRoutes />
         </main>
+        <Footer />
       </div>
     </BrowserRouter>
   );
