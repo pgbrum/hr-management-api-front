@@ -8,9 +8,9 @@ import CreateAdminForm from './components/CreateAdminForm/CreateAdminForm';
 import CreateEmployeeForm from './components/CreateEmployeeForm/CreateEmployeeForm';
 import CreatePositionForm from './components/CreatePositionForm/CreatePositionForm';
 import CreateBenefitForm from './components/CreateBenefitForm/CreateBenefitForm';
-import EmployeeList from './components/EmployeeList';
-import PositionList from './components/PositionsList';
-import BenefitsList from './components/BenefitsList';
+import EmployeeList from './components/EmployeeList/EmployeeList';
+import PositionList from './components/PositionsList/PositionsList';
+import BenefitsList from './components/BenefitsList/BenefitsList';
 
 
 
