@@ -1,39 +1,48 @@
+/* src/components/Header/Header.module.css */
+
 .header {
-  background-color: #f9fafb;
-  padding: 20px 0;
+  background-color: #ffffff;
+  padding: 1rem 0;
   border-bottom: 1px solid #e5e7eb;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.04);
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  width: 100%;
 }
 
 .container {
-  max-width: 1200px;
+  max-width: 1280px;
   margin: 0 auto;
-  padding: 0 20px;
+  padding: 0 24px;
   display: flex;
-  flex-direction: column;
   align-items: center;
-  text-align: center;
+  justify-content: space-between;
 }
 
-.title {
-  font-size: 2rem;
-  color: #1f2937;
-  font-weight: 700;
-  margin-bottom: 15px;
+.logo a {
+  text-decoration: none;
+  font-size: 1.75rem;
+  font-weight: 800; /* Extra-bold */
+  color: #111827; /* Quase preto */
+}
+
+/* Estilo para a parte "RH" do logo */
+.logo a span {
+  color: #2563eb; /* Azul primário */
 }
 
 .nav {
-  width: 100%;
+  display: none; /* Escondido em telas pequenas */
 }
 
 .navList {
   display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 16px;
+  gap: 24px;
   padding: 0;
   margin: 0;
   list-style: none;
+  align-items: center;
 }
 
 .navItem {
@@ -42,37 +51,56 @@
 
 .navLink {
   text-decoration: none;
-  color: #2563eb;
+  color: #4b5563; /* Cinza escuro para links inativos */
   font-weight: 500;
-  font-size: 0.95rem;
-  padding: 6px 12px;
-  border-radius: 6px;
-  transition: all 0.3s ease;
+  font-size: 1rem;
+  padding: 8px 0;
+  position: relative;
+  transition: color 0.2s ease-in-out;
+}
+
+/* Efeito de sublinhado animado no hover */
+.navLink::after {
+  content: '';
+  position: absolute;
+  width: 100%;
+  transform: scaleX(0);
+  height: 2px;
+  bottom: 0;
+  left: 0;
+  background-color: #2563eb;
+  transform-origin: bottom right;
+  transition: transform 0.25s ease-out;
+}
+
+.navLink:hover::after {
+  transform: scaleX(1);
+  transform-origin: bottom left;
 }
 
 .navLink:hover {
-  background-color: #e0e7ff;
-  color: #1e40af;
+  color: #111827; /* Cor mais escura no hover */
 }
 
-/* Em telas maiores: título à esquerda, nav à direita */
-@media (min-width: 768px) {
-  .container {
-    flex-direction: row;
-    justify-content: space-between;
-    align-items: center;
-    text-align: left;
-  }
+/* Estilo para o link ATIVO */
+.active {
+  color: #2563eb; /* Azul primário */
+  font-weight: 600; /* Levemente mais ousado */
+}
 
-  .title {
-    margin-bottom: 0;
-  }
+/* O sublinhado do link ativo fica sempre visível */
+.active::after {
+  transform: scaleX(1);
+  background-color: #2563eb;
+}
 
+
+/* Media query para telas maiores, onde a navegação aparece */
+@media (min-width: 1024px) {
   .nav {
-    width: auto;
-  }
-
-  .navList {
-    justify-content: flex-end;
+    display: block;
   }
 }
+
+/* Em telas pequenas, você precisaria de um botão "menu hamburguer" para mostrar/esconder a navegação.
+   Por simplicidade, aqui apenas escondemos a navegação. */

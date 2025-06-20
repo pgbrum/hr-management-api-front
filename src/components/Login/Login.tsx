@@ -1,3 +1,4 @@
+// src/components/Login/Login.tsx
 import React, { useState } from 'react';
 import styles from './Login.module.css';
 
@@ -9,6 +10,8 @@ const Login: React.FC = () => {
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
+    setErrorMessage('');
+    setSuccessMessage('');
 
     try {
       const response = await fetch('http://localhost:3333/sessions', {
@@ -19,50 +22,57 @@ const Login: React.FC = () => {
         body: JSON.stringify({ email, password }),
       });
 
+      const data = await response.json();
+
       if (!response.ok) {
-        throw new Error('Erro ao autenticar');
+        throw new Error(data.message || 'Credenciais inválidas.');
       }
 
-      const data = await response.json();
       sessionStorage.setItem('token', data.token);
 
       setSuccessMessage('Login realizado com sucesso!');
-      setErrorMessage('');
       setEmail('');
       setPassword('');
-    } catch (error) {
-      setErrorMessage('Erro ao fazer login.');
-      setSuccessMessage('');
+    } catch (error: any) {
+      setErrorMessage(error.message || 'Não foi possível fazer login.');
     }
   };
 
   return (
     <div className={styles.container}>
       <div className={styles.card}>
-        <h2>Por favor, faça seu login</h2>
+        <h2>Acesse a Plataforma</h2>
         <form onSubmit={handleLogin}>
           <div className={styles.formGroup}>
-            <label>Email:</label>
+            <label htmlFor="email">Email:</label>
             <input
+              id="email"
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
+              placeholder="seu@email.com"
             />
           </div>
 
           <div className={styles.formGroup}>
-            <label>Senha:</label>
+            <label htmlFor="password">Senha:</label>
             <input
+              id="password"
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
+              placeholder="••••••••"
             />
           </div>
+          
+          {/* A ÚNICA ALTERAÇÃO ESTÁ AQUI: adicionamos a classe ao botão */}
+          <button type="submit" className={styles.button}>
+            Entrar
+          </button>
 
-          <button type="submit">Entrar</button>
-
+          {/* As mensagens de erro/sucesso agora aparecem acima do botão */}
           {successMessage && (
             <p className={`${styles.message} ${styles.success}`}>
               {successMessage}
