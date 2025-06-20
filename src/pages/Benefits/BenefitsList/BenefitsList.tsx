@@ -2,14 +2,10 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import styles from './BenefitsList.module.css'; // Certifique-se que o nome do arquivo CSS está correto
-
+import { Benefit } from '../../../types';
 const API_BASE_URL = 'http://localhost:3333/benefits';
 
-type Benefit = {
-  id: string;
-  name: string;
-  value: number;
-};
+
 
 const BenefitsList: React.FC = () => {
   const [benefits, setBenefits] = useState<Benefit[]>([]);

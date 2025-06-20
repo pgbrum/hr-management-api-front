@@ -3,14 +3,14 @@ import React from 'react';
 import { Routes, Route } from 'react-router-dom';
 
 // Importe os componentes que serão usados nas rotas
-import Login from './components/Login/Login';
-import CreateAdminForm from './components/CreateAdminForm/CreateAdminForm';
-import CreateEmployeeForm from './components/CreateEmployeeForm/CreateEmployeeForm';
-import CreatePositionForm from './components/CreatePositionForm/CreatePositionForm';
-import CreateBenefitForm from './components/CreateBenefitForm/CreateBenefitForm';
-import EmployeeList from './components/EmployeeList/EmployeeList';
-import PositionList from './components/PositionsList/PositionsList';
-import BenefitsList from './components/BenefitsList/BenefitsList';
+import Login from './pages/Login/Login/Login';
+import CreateAdminForm from './pages/Login/CreateAdminForm/CreateAdminForm';
+import CreateEmployeeForm from './pages/Employees/CreateEmployeeForm/CreateEmployeeForm';
+import CreatePositionForm from './pages/Positions/CreatePositionForm/CreatePositionForm';
+import CreateBenefitForm from './pages/Benefits/CreateBenefitForm/CreateBenefitForm';
+import EmployeeList from './pages/Employees/EmployeeList/EmployeeList';
+import PositionList from './pages/Positions/PositionsList/PositionsList';
+import BenefitsList from './pages/Benefits/BenefitsList/BenefitsList';
 
 
 

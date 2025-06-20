@@ -2,22 +2,10 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import styles from './EmployeeList.module.css'; // Importando os estilos
+import { Employee } from '../../../types';
 
 const API_BASE_URL = 'http://localhost:3333/employees';
 
-type Position = {
-  id: string;
-  title: string;
-  salary: number;
-};
-
-type Employee = {
-  id: string;
-  name: string;
-  email: string;
-  position: Position | null;
-  benefits: string[];
-};
 
 const EmployeeList: React.FC = () => {
   const [employees, setEmployees] = useState<Employee[]>([]);
