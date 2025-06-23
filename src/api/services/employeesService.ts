@@ -6,7 +6,7 @@ type EmployeePayload = {
   name: string;
   email: string;
   positionId: string | null; // vamos enviar só o id da posição para criação/atualização
-  benefits: string[];        // array com ids ou nomes dos benefícios, conforme seu backend espera
+  benefitIds: string[];       // array com ids ou nomes dos benefícios, conforme seu backend espera
 };
 
 export const employeesService = {

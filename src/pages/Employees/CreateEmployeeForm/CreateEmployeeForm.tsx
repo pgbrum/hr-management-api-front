@@ -104,7 +104,7 @@ const CreateEmployeeForm: React.FC = () => {
         name,
         email,
         positionId: positionId || null,
-        benefits: selectedBenefits.map(b => b.id),
+        benefitIds: selectedBenefits.map(b => b.id),
       });
 
       setSuccessMessage('Funcionário cadastrado com sucesso!');

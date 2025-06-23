@@ -41,12 +41,12 @@ const EmployeeList: React.FC = () => {
     const newEmail = prompt('Novo email:', employee.email);
     if (newEmail === null) return;
 
-    const newPositionId = prompt('Novo ID do Cargo:', employee.position?.id || '');
+    const newPositionId = prompt('Novo ID do Cargo:', employee.positionId?.id || '');
     if (newPositionId === null) return;
 
     const newBenefitsStr = prompt(
       'Novos benefícios (IDs separados por vírgula):',
-      employee.benefits.join(', ')
+      employee.benefitIds.join(', ')
     );
     if (newBenefitsStr === null) return;
 
@@ -54,7 +54,7 @@ const EmployeeList: React.FC = () => {
       name: newName,
       email: newEmail,
       positionId: newPositionId || null,
-      benefits: newBenefitsStr
+      benefitIds: newBenefitsStr
         .split(',')
         .map((b) => b.trim())
         .filter((b) => b !== ''),
@@ -110,10 +110,10 @@ const EmployeeList: React.FC = () => {
                     {employee.email}
                   </td>
                   <td className={styles.tableCell} data-label="Cargo">
-                    {employee.position ? employee.position.title : 'N/A'}
+                    {employee.positionId ? employee.positionId.title : 'N/A'}
                   </td>
                   <td className={styles.tableCell} data-label="Benefícios">
-                    {employee.benefits.length}
+                     {employee.benefits?.length ?? 0}
                   </td>
                   <td className={`${styles.tableCell} ${styles.actionsCell}`} data-label="Ações">
                     <button
