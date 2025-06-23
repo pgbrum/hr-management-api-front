@@ -1,30 +1,19 @@
 // src/components/PositionList.tsx
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import styles from './PositionsList.module.css'; // Importando os novos estilos
-
-const API_BASE_URL = 'http://localhost:3333/positions';
-
-type Position = {
-  id: string;
-  title: string;
-  salary: number;
-};
+import styles from './PositionsList.module.css';
+import { Position } from '../../../types';
+import { positionsService } from '../../../api/services/positionsService';
 
 const PositionList: React.FC = () => {
   const [positions, setPositions] = useState<Position[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
-  // Lógica de fetch e handlers mantida para focar na estilização
   const fetchPositions = async () => {
     try {
-      const response = await fetch(API_BASE_URL);
-      if (!response.ok) {
-        throw new Error(`Erro HTTP! Status: ${response.status}`);
-      }
-      const data = await response.json();
-      setPositions(data.positions);
+      const data = await positionsService.getAll();
+      setPositions(data);
     } catch (err) {
       console.error('Erro ao buscar cargos:', err);
       setError('Falha ao carregar cargos.');
@@ -40,29 +29,26 @@ const PositionList: React.FC = () => {
   }, []);
 
   const handleDelete = async (id: string) => {
-    if (!window.confirm(`Tem certeza que deseja DELETAR este cargo?`)) {
-      return;
-    }
-    await fetch(`${API_BASE_URL}/${id}`, { method: 'DELETE' });
-    fetchPositions(); // Recarrega a lista
+    if (!window.confirm('Tem certeza que deseja DELETAR este cargo?')) return;
+    await positionsService.delete(id);
+    fetchPositions();
   };
 
   const handleEdit = async (position: Position) => {
     const newTitle = prompt('Novo nome do cargo:', position.title);
     if (newTitle === null) return;
+
     const newSalaryStr = prompt('Novo salário:', String(position.salary));
     if (newSalaryStr === null) return;
+
     const newSalary = parseFloat(newSalaryStr);
     if (isNaN(newSalary)) {
       alert('Salário inválido.');
       return;
     }
-    await fetch(`${API_BASE_URL}/${position.id}`, {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ title: newTitle, salary: newSalary }),
-    });
-    fetchPositions(); // Recarrega a lista
+
+    await positionsService.update(position.id, { title: newTitle, salary: newSalary });
+    fetchPositions();
   };
 
   const formatCurrency = (value: number) => {
@@ -113,10 +99,16 @@ const PositionList: React.FC = () => {
                   <td className={styles.tableCell} data-label="Cargo">{position.title}</td>
                   <td className={styles.tableCell} data-label="Salário">{formatCurrency(position.salary)}</td>
                   <td className={`${styles.tableCell} ${styles.actionsCell}`} data-label="Ações">
-                    <button onClick={() => handleEdit(position)} className={`${styles.actionButton} ${styles.editButton}`}>
+                    <button
+                      onClick={() => handleEdit(position)}
+                      className={`${styles.actionButton} ${styles.editButton}`}
+                    >
                       Editar
                     </button>
-                    <button onClick={() => handleDelete(position.id)} className={`${styles.actionButton} ${styles.deleteButton}`}>
+                    <button
+                      onClick={() => handleDelete(position.id)}
+                      className={`${styles.actionButton} ${styles.deleteButton}`}
+                    >
                       Deletar
                     </button>
                   </td>
@@ -125,6 +117,7 @@ const PositionList: React.FC = () => {
             </tbody>
           </table>
         </div>
+
         {positions.length === 0 && !loading && (
           <p className={styles.emptyState}>Nenhum cargo encontrado.</p>
         )}

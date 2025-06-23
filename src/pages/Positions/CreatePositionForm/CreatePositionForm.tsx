@@ -1,10 +1,11 @@
 // src/components/CreatePositionForm.tsx
 import React, { useState } from 'react';
-import styles from './CreatePositionForm.module.css'; // Importando os estilos
+import styles from './CreatePositionForm.module.css';
+import { positionsService } from '../../../api/services/positionsService';
 
 const CreatePositionForm: React.FC = () => {
   const [title, setTitle] = useState('');
-  const [salary, setSalary] = useState<number | ''>(''); // Melhor para campos de número
+  const [salary, setSalary] = useState<number | ''>('');
   const [successMessage, setSuccessMessage] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
 
@@ -14,27 +15,16 @@ const CreatePositionForm: React.FC = () => {
     setErrorMessage('');
 
     try {
-      const response = await fetch('http://localhost:3333/positions', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          title,
-          salary: Number(salary),
-        }),
+      await positionsService.create({
+        title,
+        salary: Number(salary),
       });
 
-      if (response.ok) {
-        setSuccessMessage('Cargo cadastrado com sucesso!');
-        setTitle('');
-        setSalary('');
-      } else {
-        const error = await response.json();
-        throw new Error(error.message || 'Erro desconhecido');
-      }
+      setSuccessMessage('Cargo cadastrado com sucesso!');
+      setTitle('');
+      setSalary('');
     } catch (err: any) {
-      setErrorMessage(err.message || 'Erro ao conectar com a API.');
+      setErrorMessage('Erro ao cadastrar cargo. Verifique os dados.');
       console.error(err);
     }
   };
@@ -43,7 +33,7 @@ const CreatePositionForm: React.FC = () => {
     <div className={styles.container}>
       <div className={styles.card}>
         <h2 className={styles.title}>Cadastrar Novo Cargo</h2>
-        
+
         <form onSubmit={handleSubmit} className={styles.form}>
           <div className={styles.formGroup}>
             <label htmlFor="title">Nome do Cargo</label>
@@ -63,13 +53,15 @@ const CreatePositionForm: React.FC = () => {
               type="number"
               id="salary"
               value={salary}
-              onChange={(e) => setSalary(e.target.value === '' ? '' : Number(e.target.value))}
+              onChange={(e) =>
+                setSalary(e.target.value === '' ? '' : Number(e.target.value))
+              }
               placeholder="Ex: 8500.00"
-              step="0.01" // Permite casas decimais
+              step="0.01"
               required
             />
           </div>
-          
+
           <button type="submit" className={styles.button}>
             Cadastrar Cargo
           </button>

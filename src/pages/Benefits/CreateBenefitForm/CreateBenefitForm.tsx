@@ -1,10 +1,12 @@
 // src/components/CreateBenefitForm.tsx
+
 import React, { useState } from 'react';
-import styles from './CreateBenefitForm.module.css'; // Importando os estilos
+import styles from './CreateBenefitForm.module.css';
+import { benefitsService } from '../../../api/services/benefitsService';
 
 const CreateBenefitForm: React.FC = () => {
   const [name, setName] = useState('');
-  const [value, setValue] = useState<number | ''>(''); // Melhor para campos controlados
+  const [value, setValue] = useState<number | ''>('');
   const [successMessage, setSuccessMessage] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
 
@@ -14,24 +16,13 @@ const CreateBenefitForm: React.FC = () => {
     setSuccessMessage('');
 
     try {
-      const response = await fetch('http://localhost:3333/benefits', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ name, value: Number(value) }),
-      });
-
-      if (!response.ok) {
-        throw new Error('Erro ao cadastrar benefício');
-      }
+      await benefitsService.create({ name, value: Number(value) });
 
       setSuccessMessage('Benefício cadastrado com sucesso!');
       setName('');
       setValue('');
-    } catch (error) {
+    } catch {
       setErrorMessage('Erro ao cadastrar benefício. Verifique os dados.');
-      setSuccessMessage('');
     }
   };
 
@@ -59,7 +50,9 @@ const CreateBenefitForm: React.FC = () => {
               type="number"
               id="value"
               value={value}
-              onChange={(e) => setValue(e.target.value === '' ? '' : Number(e.target.value))}
+              onChange={(e) =>
+                setValue(e.target.value === '' ? '' : Number(e.target.value))
+              }
               placeholder="Ex: 500.50"
               required
             />
