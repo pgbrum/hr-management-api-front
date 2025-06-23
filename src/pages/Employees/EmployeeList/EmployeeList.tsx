@@ -1,24 +1,19 @@
 // src/components/EmployeeList.tsx
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import styles from './EmployeeList.module.css'; // Importando os estilos
+import styles from './EmployeeList.module.css';
 import { Employee } from '../../../types';
-
-const API_BASE_URL = 'http://localhost:3333/employees';
-
+import { employeesService } from '../../../api/services/employeesService';
 
 const EmployeeList: React.FC = () => {
   const [employees, setEmployees] = useState<Employee[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
-  // Lógica de fetch e handlers mantida conforme o original
   const fetchEmployees = async () => {
     try {
-      const response = await fetch(API_BASE_URL);
-      if (!response.ok) throw new Error(`Erro HTTP! Status: ${response.status}`);
-      const data = await response.json();
-      setEmployees(data.employees);
+      const data = await employeesService.getAll();
+      setEmployees(data);
     } catch (err) {
       console.error('Erro ao buscar funcionários:', err);
       setError('Falha ao carregar funcionários.');
@@ -34,37 +29,40 @@ const EmployeeList: React.FC = () => {
   }, []);
 
   const handleDelete = async (id: string) => {
-    if (!window.confirm(`Tem certeza que deseja DELETAR este funcionário?`)) {
-      return;
-    }
-    await fetch(`${API_BASE_URL}/${id}`, { method: 'DELETE' });
+    if (!window.confirm('Tem certeza que deseja DELETAR este funcionário?')) return;
+    await employeesService.delete(id);
     fetchEmployees();
   };
 
   const handleEdit = async (employee: Employee) => {
-    // A lógica de prompt foi mantida para focar na estilização
     const newName = prompt('Novo nome:', employee.name);
     if (newName === null) return;
+
     const newEmail = prompt('Novo email:', employee.email);
     if (newEmail === null) return;
+
     const newPositionId = prompt('Novo ID do Cargo:', employee.position?.id || '');
     if (newPositionId === null) return;
-    const newBenefitsStr = prompt('Novos benefícios (IDs separados por vírgula):', employee.benefits.join(', '));
+
+    const newBenefitsStr = prompt(
+      'Novos benefícios (IDs separados por vírgula):',
+      employee.benefits.join(', ')
+    );
     if (newBenefitsStr === null) return;
 
-    await fetch(`${API_BASE_URL}/${employee.id}`, {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        name: newName,
-        email: newEmail,
-        positionId: newPositionId || null,
-        benefits: newBenefitsStr.split(',').map(b => b.trim()).filter(b => b !== ''),
-      }),
+    await employeesService.update(employee.id, {
+      name: newName,
+      email: newEmail,
+      positionId: newPositionId || null,
+      benefits: newBenefitsStr
+        .split(',')
+        .map((b) => b.trim())
+        .filter((b) => b !== ''),
     });
+
     fetchEmployees();
   };
-  
+
   if (loading) {
     return (
       <div className={styles.stateContainer}>
@@ -105,15 +103,29 @@ const EmployeeList: React.FC = () => {
             <tbody>
               {employees.map((employee) => (
                 <tr key={employee.id} className={styles.tableRow}>
-                  <td className={styles.tableCell} data-label="Nome">{employee.name}</td>
-                  <td className={styles.tableCell} data-label="Email">{employee.email}</td>
-                  <td className={styles.tableCell} data-label="Cargo">{employee.position ? employee.position.title : 'N/A'}</td>
-                  <td className={styles.tableCell} data-label="Benefícios">{employee.benefits.length}</td>
+                  <td className={styles.tableCell} data-label="Nome">
+                    {employee.name}
+                  </td>
+                  <td className={styles.tableCell} data-label="Email">
+                    {employee.email}
+                  </td>
+                  <td className={styles.tableCell} data-label="Cargo">
+                    {employee.position ? employee.position.title : 'N/A'}
+                  </td>
+                  <td className={styles.tableCell} data-label="Benefícios">
+                    {employee.benefits.length}
+                  </td>
                   <td className={`${styles.tableCell} ${styles.actionsCell}`} data-label="Ações">
-                    <button onClick={() => handleEdit(employee)} className={`${styles.actionButton} ${styles.editButton}`}>
+                    <button
+                      onClick={() => handleEdit(employee)}
+                      className={`${styles.actionButton} ${styles.editButton}`}
+                    >
                       Editar
                     </button>
-                    <button onClick={() => handleDelete(employee.id)} className={`${styles.actionButton} ${styles.deleteButton}`}>
+                    <button
+                      onClick={() => handleDelete(employee.id)}
+                      className={`${styles.actionButton} ${styles.deleteButton}`}
+                    >
                       Deletar
                     </button>
                   </td>
@@ -122,6 +134,7 @@ const EmployeeList: React.FC = () => {
             </tbody>
           </table>
         </div>
+
         {employees.length === 0 && !loading && (
           <p className={styles.emptyState}>Nenhum funcionário encontrado.</p>
         )}

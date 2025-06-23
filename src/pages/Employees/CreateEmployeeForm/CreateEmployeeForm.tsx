@@ -1,6 +1,7 @@
 // src/components/CreateEmployeeForm.tsx
 import React, { useState } from 'react';
-import styles from './CreateEmployeeForm.module.css'; // Importando os novos estilos
+import styles from './CreateEmployeeForm.module.css';
+import { employeesService } from '../../../api/services/employeesService';
 
 const CreateEmployeeForm: React.FC = () => {
   const [name, setName] = useState('');
@@ -22,22 +23,12 @@ const CreateEmployeeForm: React.FC = () => {
       .filter((b) => b.length > 0);
 
     try {
-      const response = await fetch('http://localhost:3333/employees', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          name,
-          email,
-          positionId: positionId || null,
-          benefits: benefitsArray.length > 0 ? benefitsArray : undefined,
-        }),
+      await employeesService.create({
+        name,
+        email,
+        positionId: positionId || null,
+        benefits: benefitsArray.length > 0 ? benefitsArray : [],
       });
-
-      if (!response.ok) {
-        throw new Error('Erro ao cadastrar funcionário');
-      }
 
       setSuccessMessage('Funcionário cadastrado com sucesso!');
       setName('');
@@ -47,6 +38,7 @@ const CreateEmployeeForm: React.FC = () => {
     } catch (error) {
       setErrorMessage('Erro ao cadastrar funcionário. Verifique os dados.');
       setSuccessMessage('');
+      console.error(error);
     }
   };
 
@@ -54,7 +46,7 @@ const CreateEmployeeForm: React.FC = () => {
     <div className={styles.container}>
       <div className={styles.card}>
         <h2 className={styles.title}>Cadastrar Novo Funcionário</h2>
-        
+
         <form onSubmit={handleSubmit} className={styles.form}>
           <div className={styles.formGroup}>
             <label htmlFor="name">Nome Completo</label>
@@ -89,7 +81,7 @@ const CreateEmployeeForm: React.FC = () => {
               onChange={(e) => setPositionId(e.target.value)}
               placeholder="Deixe em branco se não aplicável"
             />
-             <small className={styles.formHint}>Este campo é opcional.</small>
+            <small className={styles.formHint}>Este campo é opcional.</small>
           </div>
 
           <div className={styles.formGroup}>
@@ -109,14 +101,10 @@ const CreateEmployeeForm: React.FC = () => {
           </button>
 
           {successMessage && (
-            <p className={`${styles.message} ${styles.success}`}>
-              {successMessage}
-            </p>
+            <p className={`${styles.message} ${styles.success}`}>{successMessage}</p>
           )}
           {errorMessage && (
-            <p className={`${styles.message} ${styles.error}`}>
-              {errorMessage}
-            </p>
+            <p className={`${styles.message} ${styles.error}`}>{errorMessage}</p>
           )}
         </form>
       </div>
