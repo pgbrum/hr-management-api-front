@@ -1,6 +1,8 @@
-// src/components/Login/Login.tsx
 import React, { useState } from 'react';
 import styles from './Login.module.css';
+
+// 1. Importando o serviço (ajuste o caminho se for diferente no seu projeto)
+import { loginService } from '../../../api/services/loginService';
 
 const Login: React.FC = () => {
   const [email, setEmail] = useState('');
@@ -14,19 +16,8 @@ const Login: React.FC = () => {
     setSuccessMessage('');
 
     try {
-      const response = await fetch('http://localhost:3333/sessions', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ email, password }),
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.message || 'Credenciais inválidas.');
-      }
+      // 2. A chamada 'fetch' foi substituída pela chamada ao serviço.
+      const data = await loginService.login({ email, password });
 
       sessionStorage.setItem('token', data.token);
 
@@ -34,7 +25,9 @@ const Login: React.FC = () => {
       setEmail('');
       setPassword('');
     } catch (error: any) {
-      setErrorMessage(error.message || 'Não foi possível fazer login.');
+      // 3. A captura de erro foi ajustada para o padrão do serviço/Axios.
+      const apiErrorMessage = error.response?.data?.message || 'Credenciais inválidas ou erro no servidor.';
+      setErrorMessage(apiErrorMessage);
     }
   };
 
@@ -67,12 +60,10 @@ const Login: React.FC = () => {
             />
           </div>
           
-          {/* A ÚNICA ALTERAÇÃO ESTÁ AQUI: adicionamos a classe ao botão */}
           <button type="submit" className={styles.button}>
             Entrar
           </button>
 
-          {/* As mensagens de erro/sucesso agora aparecem acima do botão */}
           {successMessage && (
             <p className={`${styles.message} ${styles.success}`}>
               {successMessage}
