@@ -15,7 +15,7 @@ export type Employee = {
   name: string;
   email: string;
   positionId: Position | null;
-  position: string[] | null;
+  position: Position | null;
   benefitIds: string[];
   benefits?: Benefit[] | undefined;
 };

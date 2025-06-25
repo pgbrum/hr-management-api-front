@@ -112,7 +112,7 @@ const EmployeeList: React.FC = () => {
                     {employee.email}
                   </td>
                   <td className={styles.tableCell} data-label="Cargo">
-                    {employee.position?.length ?? 'N/A'}
+                    {employee.position?.title ?? 'N/A'}
                   </td>
                   <td className={styles.tableCell} data-label="Benefícios">
                      {employee.benefits?.length ?? 0}
