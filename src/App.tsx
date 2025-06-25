@@ -1,25 +1,39 @@
-// src/App.tsx
-import React from 'react';
+import React, { useState } from 'react';
 import { BrowserRouter } from 'react-router-dom';
 
-// Componentes de Layout Global
 import Header from './components/layout/Header/Header';
-
-// Componente que gerencia as rotas
-import { AppRoutes } from './Routes';
 import Footer from './components/layout/Footer/Footer';
+import Login from './pages/Auth/Login/Login'; // Corrigi o caminho baseado no seu Routes.tsx
+import { AppRoutes } from './Routes';
 
 function App() {
+  const [isAuthenticated, setIsAuthenticated] = useState(!!sessionStorage.getItem('token'));
+
+  const handleLoginSuccess = () => {
+    setIsAuthenticated(true);
+  };
+
+  const handleLogout = () => {
+    sessionStorage.removeItem('token');
+    setIsAuthenticated(false);
+  };
+
   return (
     <BrowserRouter>
-      <div className="App">
-        <Header />
-        <main>
-          {/* O roteamento agora é gerenciado pelo componente AppRoutes */}
-          <AppRoutes />
-        </main>
-        <Footer />
-      </div>
+      {isAuthenticated ? (
+        <div className="App">
+          {/* Agora o Header receberá a prop 'onLogout' (vamos corrigir o erro a seguir) */}
+          <Header onLogout={handleLogout} />
+          <main>
+            {/* AppRoutes só será renderizado quando o usuário estiver autenticado */}
+            <AppRoutes />
+          </main>
+          <Footer />
+        </div>
+      ) : (
+        // Se não estiver autenticado, renderiza APENAS o Login, passando a prop necessária
+        <Login onLoginSuccess={handleLoginSuccess} />
+      )}
     </BrowserRouter>
   );
 }

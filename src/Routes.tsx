@@ -1,10 +1,8 @@
-// src/Routes.tsx
 import React from 'react';
-import { Routes, Route } from 'react-router-dom';
+import { Routes, Route, Navigate } from 'react-router-dom';
 
 // Importe os componentes que serão usados nas rotas
-import Login from './pages/Login/Login/Login';
-import CreateAdminForm from './pages/Login/CreateAdminForm/CreateAdminForm';
+// O Login NÃO é mais importado aqui.
 import CreateEmployeeForm from './pages/Employees/CreateEmployeeForm/CreateEmployeeForm';
 import CreatePositionForm from './pages/Positions/CreatePositionForm/CreatePositionForm';
 import CreateBenefitForm from './pages/Benefits/CreateBenefitForm/CreateBenefitForm';
@@ -12,14 +10,10 @@ import EmployeeList from './pages/Employees/EmployeeList/EmployeeList';
 import PositionList from './pages/Positions/PositionsList/PositionsList';
 import BenefitsList from './pages/Benefits/BenefitsList/BenefitsList';
 
-
-
-
 export function AppRoutes() {
   return (
     <Routes>
       {/* Rotas para as páginas de criação */}
-      <Route path="/admins/create" element={<CreateAdminForm />} />
       <Route path="/employees/create" element={<CreateEmployeeForm />} />
       <Route path="/positions/create" element={<CreatePositionForm />} />
       <Route path="/benefits/create" element={<CreateBenefitForm />} />
@@ -29,9 +23,12 @@ export function AppRoutes() {
       <Route path="/positions" element={<PositionList />} />
       <Route path="/benefits" element={<BenefitsList />} />
       
-      {/* Rota para Login e também a rota padrão/inicial */}
-      <Route path="/login" element={<Login />} />
-      <Route path="/" element={<Login />} />
+      {/* 1. REMOVEMOS as rotas para /login e / daqui. */}
+
+      {/* 2. Definimos uma rota padrão para onde o usuário será levado após o login. */}
+      {/* A rota "/" agora redireciona para a lista de funcionários, por exemplo. */}
+      <Route path="/" element={<Navigate to="/employees" />} />
+
     </Routes>
   );
 }

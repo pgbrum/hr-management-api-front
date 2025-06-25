@@ -1,15 +1,18 @@
-// src/components/Header/Header.tsx
 import React from 'react';
-// Importamos NavLink em vez de Link
 import { NavLink } from 'react-router-dom';
 import styles from './Header.module.css';
 
-const Header: React.FC = () => {
+// 1. Definimos o tipo para as props que o Header agora recebe.
+type HeaderProps = {
+  onLogout: () => void;
+};
+
+// 2. O componente agora é um React.FC<HeaderProps> e recebe 'onLogout'.
+const Header: React.FC<HeaderProps> = ({ onLogout }) => {
   return (
     <header className={styles.header}>
       <div className={styles.container}>
         <div className={styles.logo}>
-          {/* Adicionamos 'end' para que o logo não fique ativo em todas as páginas */}
           <NavLink to="/" end>
             <span>RH</span>Master
           </NavLink>
@@ -17,27 +20,30 @@ const Header: React.FC = () => {
 
         <nav className={styles.nav}>
           <ul className={styles.navList}>
+            {/* Links para as listagens */}
             <li className={styles.navItem}>
-              {/* Adicionamos 'end' ao login para garantir correspondência exata */}
-              <NavLink 
-                to="/login"
-                end 
-                className={({ isActive }) => isActive ? `${styles.navLink} ${styles.active}` : styles.navLink}
-              >
-                Login
+              <NavLink to="/employees" end className={({ isActive }) => isActive ? `${styles.navLink} ${styles.active}` : styles.navLink}>
+                Funcionários
               </NavLink>
             </li>
             <li className={styles.navItem}>
-              {/* Links de "create" não precisam de 'end' pois já são específicos */}
-              <NavLink to="/admins/create" className={({ isActive }) => isActive ? `${styles.navLink} ${styles.active}` : styles.navLink}>
-                Criar Admin
+              <NavLink to="/positions" end className={({ isActive }) => isActive ? `${styles.navLink} ${styles.active}` : styles.navLink}>
+                Cargos
               </NavLink>
             </li>
+            <li className={styles.navItem}>
+              <NavLink to="/benefits" end className={({ isActive }) => isActive ? `${styles.navLink} ${styles.active}` : styles.navLink}>
+                Benefícios
+              </NavLink>
+            </li>
+
+            {/* Links de "create" (pode ser um dropdown no futuro) */}
             <li className={styles.navItem}>
               <NavLink to="/employees/create" className={({ isActive }) => isActive ? `${styles.navLink} ${styles.active}` : styles.navLink}>
                 Criar Funcionário
               </NavLink>
             </li>
+            {/* Adicionei os outros links de criação que estavam no seu original */}
             <li className={styles.navItem}>
               <NavLink to="/positions/create" className={({ isActive }) => isActive ? `${styles.navLink} ${styles.active}` : styles.navLink}>
                 Criar Cargo
@@ -48,23 +54,17 @@ const Header: React.FC = () => {
                 Criar Benefício
               </NavLink>
             </li>
-            <li className={styles.navItem}>
-              {/* CORREÇÃO PRINCIPAL: Adicionado 'end' ao link de listagem */}
-              <NavLink to="/employees" end className={({ isActive }) => isActive ? `${styles.navLink} ${styles.active}` : styles.navLink}>
-                Funcionários
+            {/* <li className={styles.navItem}>
+              <NavLink to="/admins/create" className={({ isActive }) => isActive ? `${styles.navLink} ${styles.active}` : styles.navLink}>
+                Criar Admin
               </NavLink>
-            </li>
+            </li> */}
+
+            {/* 3. O link de Login foi substituído por um botão de Sair */}
             <li className={styles.navItem}>
-              {/* CORREÇÃO PRINCIPAL: Adicionado 'end' ao link de listagem */}
-              <NavLink to="/positions" end className={({ isActive }) => isActive ? `${styles.navLink} ${styles.active}` : styles.navLink}>
-                Cargos
-              </NavLink>
-            </li>
-            <li className={styles.navItem}>
-              {/* CORREÇÃO PRINCIPAL: Adicionado 'end' ao link de listagem */}
-              <NavLink to="/benefits" end className={({ isActive }) => isActive ? `${styles.navLink} ${styles.active}` : styles.navLink}>
-                Benefícios
-              </NavLink>
+              <button onClick={onLogout} className={`${styles.navLink} ${styles.logoutButton}`}>
+                Sair
+              </button>
             </li>
           </ul>
         </nav>

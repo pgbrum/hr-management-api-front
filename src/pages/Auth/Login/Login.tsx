@@ -1,33 +1,40 @@
 import React, { useState } from 'react';
 import styles from './Login.module.css';
 
-// 1. Importando o serviço (ajuste o caminho se for diferente no seu projeto)
-import { loginService } from '../../../api/services/loginService';
+// Importando o serviço que você criou
+import { loginService } from '../../../api/services/loginService'; // Ajuste o caminho se necessário
 
-const Login: React.FC = () => {
+// 1. Definindo o tipo das props que o componente vai receber.
+// Ele agora espera receber uma função chamada 'onLoginSuccess'.
+type LoginProps = {
+  onLoginSuccess: () => void;
+};
+
+// 2. O componente agora recebe 'onLoginSuccess' via props.
+const Login: React.FC<LoginProps> = ({ onLoginSuccess }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
-  const [successMessage, setSuccessMessage] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setErrorMessage('');
-    setSuccessMessage('');
+    setIsLoading(true);
 
     try {
-      // 2. A chamada 'fetch' foi substituída pela chamada ao serviço.
       const data = await loginService.login({ email, password });
-
       sessionStorage.setItem('token', data.token);
+      
+      // 3. SUCESSO! Chamamos a função recebida do App.tsx.
+      // Isso irá atualizar o estado no App e mudar a tela.
+      onLoginSuccess();
 
-      setSuccessMessage('Login realizado com sucesso!');
-      setEmail('');
-      setPassword('');
     } catch (error: any) {
-      // 3. A captura de erro foi ajustada para o padrão do serviço/Axios.
-      const apiErrorMessage = error.response?.data?.message || 'Credenciais inválidas ou erro no servidor.';
+      const apiErrorMessage = error.response?.data?.message || 'Credenciais inválidas.';
       setErrorMessage(apiErrorMessage);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -45,6 +52,7 @@ const Login: React.FC = () => {
               onChange={(e) => setEmail(e.target.value)}
               required
               placeholder="seu@email.com"
+              disabled={isLoading}
             />
           </div>
 
@@ -57,18 +65,14 @@ const Login: React.FC = () => {
               onChange={(e) => setPassword(e.target.value)}
               required
               placeholder="••••••••"
+              disabled={isLoading}
             />
           </div>
           
-          <button type="submit" className={styles.button}>
-            Entrar
+          <button type="submit" className={styles.button} disabled={isLoading}>
+            {isLoading ? 'Entrando...' : 'Entrar'}
           </button>
 
-          {successMessage && (
-            <p className={`${styles.message} ${styles.success}`}>
-              {successMessage}
-            </p>
-          )}
           {errorMessage && (
             <p className={`${styles.message} ${styles.error}`}>
               {errorMessage}
