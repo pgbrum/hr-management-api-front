@@ -1,4 +1,3 @@
-// src/components/EmployeeList.tsx
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import styles from './EmployeeList.module.css';
@@ -7,6 +6,7 @@ import { employeesService } from '../../../api/services/employeesService';
 
 const EmployeeList: React.FC = () => {
   const [employees, setEmployees] = useState<Employee[]>([]);
+  const [searchTerm, setSearchTerm] = useState<string>('');
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -79,13 +79,22 @@ const EmployeeList: React.FC = () => {
     );
   }
 
-  
+  const filteredEmployees = employees.filter((employee) =>
+    employee.email.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
   return (
     <div className={styles.container}>
       <div className={styles.card}>
         <div className={styles.header}>
           <h2 className={styles.title}>Lista de Funcionários</h2>
+          <input
+            type="text"
+            placeholder="🔍 Buscar por email..."
+            className={styles.searchInput}
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
           <Link to="/employees/create" className={styles.createButton}>
             Cadastrar Funcionário
           </Link>
@@ -103,7 +112,7 @@ const EmployeeList: React.FC = () => {
               </tr>
             </thead>
             <tbody>
-              {employees.map((employee) => (
+              {filteredEmployees.map((employee) => (
                 <tr key={employee.id} className={styles.tableRow}>
                   <td className={styles.tableCell} data-label="Nome">
                     {employee.name}
@@ -115,7 +124,7 @@ const EmployeeList: React.FC = () => {
                     {employee.position?.title ?? 'N/A'}
                   </td>
                   <td className={styles.tableCell} data-label="Benefícios">
-                     {employee.benefits?.length ?? 0}
+                    {employee.benefits?.length ?? 0}
                   </td>
                   <td className={`${styles.tableCell} ${styles.actionsCell}`} data-label="Ações">
                     <button
@@ -137,8 +146,13 @@ const EmployeeList: React.FC = () => {
           </table>
         </div>
 
-        {employees.length === 0 && !loading && (
-          <p className={styles.emptyState}>Nenhum funcionário encontrado.</p>
+        {filteredEmployees.length === 0 && !loading && (
+          <p className={styles.emptyState}>
+            {searchTerm 
+              ? `Nenhum funcionário encontrado para "${searchTerm}".`
+              : 'Nenhum funcionário cadastrado.'
+            }
+          </p>
         )}
       </div>
     </div>
