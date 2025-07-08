@@ -1,5 +1,3 @@
-/* src/components/Header/Header.module.css */
-
 .header {
   background-color: #ffffff;
   padding: 1rem 0;
@@ -18,22 +16,104 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
+  position: relative;
 }
 
 .logo a {
   text-decoration: none;
   font-size: 1.75rem;
-  font-weight: 800; /* Extra-bold */
-  color: #111827; /* Quase preto */
+  font-weight: 800;
+  color: #111827;
+  position: relative;
+  z-index: 10;
 }
 
-/* Estilo para a parte "RH" do logo */
 .logo a span {
-  color: #2563eb; /* Azul primário */
+  color: #2563eb;
 }
 
-.nav {
-  display: none; /* Escondido em telas pequenas */
+.mobileMenuButton {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  width: 32px;
+  height: 32px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  z-index: 100;
+  box-sizing: content-box;
+}
+
+@media (min-width: 1024px) {
+  .mobileMenuButton {
+    display: none;
+  }
+}
+
+.mobileMenuButton div {
+  width: 28px;
+  height: 3px;
+  background: #111827;
+  border-radius: 10px;
+  transition: all 0.3s linear;
+  position: relative;
+  transform-origin: 1px;
+}
+
+.mobileMenuButton.open div:nth-child(1) {
+  transform: rotate(45deg);
+}
+.mobileMenuButton.open div:nth-child(2) {
+  opacity: 0;
+  transform: translateX(20px);
+}
+.mobileMenuButton.open div:nth-child(3) {
+  transform: rotate(-45deg);
+}
+
+@media (min-width: 1024px) {
+  .nav {
+    display: flex;
+    align-items: center;
+  }
+}
+
+@media (max-width: 1023px) {
+  .nav {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100vh;
+    background-color: rgba(255, 255, 255, 0.98);
+    backdrop-filter: blur(5px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 90;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateX(-100%);
+    transition: opacity 0.3s ease, visibility 0.3s ease, transform 0.3s ease;
+  }
+
+  .nav.mobileOpen {
+    opacity: 1;
+    visibility: visible;
+    transform: translateX(0);
+  }
+
+  .navList {
+    flex-direction: column;
+    gap: 2rem;
+    align-items: center;
+  }
+
+  .navLink {
+    font-size: 1.5rem;
+  }
 }
 
 .navList {
@@ -42,7 +122,6 @@
   padding: 0;
   margin: 0;
   list-style: none;
-  align-items: center;
 }
 
 .navItem {
@@ -51,15 +130,20 @@
 
 .navLink {
   text-decoration: none;
-  color: #4b5563; /* Cinza escuro para links inativos */
+  color: #4b5563;
   font-weight: 500;
   font-size: 1rem;
   padding: 8px 0;
   position: relative;
   transition: color 0.2s ease-in-out;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-family: inherit;
+  width: 100%;
+  text-align: left;
 }
 
-/* Efeito de sublinhado animado no hover */
 .navLink::after {
   content: '';
   position: absolute;
@@ -79,28 +163,23 @@
 }
 
 .navLink:hover {
-  color: #111827; /* Cor mais escura no hover */
+  color: #111827;
 }
 
-/* Estilo para o link ATIVO */
 .active {
-  color: #2563eb; /* Azul primário */
-  font-weight: 600; /* Levemente mais ousado */
+  color: #2563eb;
+  font-weight: 600;
 }
 
-/* O sublinhado do link ativo fica sempre visível */
 .active::after {
   transform: scaleX(1);
   background-color: #2563eb;
 }
 
-
-/* Media query para telas maiores, onde a navegação aparece */
-@media (min-width: 1024px) {
-  .nav {
-    display: block;
-  }
+.logoutButton {
+  color: #ef4444;
 }
 
-/* Em telas pequenas, você precisaria de um botão "menu hamburguer" para mostrar/esconder a navegação.
-   Por simplicidade, aqui apenas escondemos a navegação. */
+.logoutButton:hover {
+  color: #dc2626;
+}
