@@ -79,9 +79,14 @@ const EmployeeList: React.FC = () => {
     );
   }
 
-  const filteredEmployees = employees.filter((employee) =>
-    employee.email.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const filteredEmployees = employees.filter((employee) => {
+    const term = searchTerm.toLowerCase();
+    return (
+      employee.name.toLowerCase().includes(term) ||
+      employee.email.toLowerCase().includes(term)
+    );
+  });
+
 
   return (
     <div className={styles.container}>
@@ -90,7 +95,7 @@ const EmployeeList: React.FC = () => {
           <h2 className={styles.title}>Lista de Funcionários</h2>
           <input
             type="text"
-            placeholder="🔍 Buscar por email..."
+            placeholder="Digite o nome ou o email do funcionário..."
             className={styles.searchInput}
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}

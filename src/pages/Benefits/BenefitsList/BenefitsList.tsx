@@ -1,5 +1,3 @@
-// src/components/BenefitsList.tsx
-
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import styles from './BenefitsList.module.css';
@@ -8,6 +6,7 @@ import { benefitsService } from '../../../api/services/benefitsService';
 
 const BenefitsList: React.FC = () => {
   const [benefits, setBenefits] = useState<Benefit[]>([]);
+  const [searchTerm, setSearchTerm] = useState<string>('');
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -75,11 +74,22 @@ const BenefitsList: React.FC = () => {
     );
   }
 
+  const filteredBenefits = benefits.filter((benefit) =>
+    benefit.name.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
   return (
     <div className={styles.container}>
       <div className={styles.card}>
         <div className={styles.header}>
           <h2 className={styles.title}>Lista de Benefícios</h2>
+          <input
+            type="text"
+            placeholder="🔍 Buscar por nome do benefício..."
+            className={styles.searchInput}
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
           <Link to="/benefits/create" className={styles.createButton}>
             Criar Novo Benefício
           </Link>
@@ -95,7 +105,7 @@ const BenefitsList: React.FC = () => {
               </tr>
             </thead>
             <tbody>
-              {benefits.map((benefit) => (
+              {filteredBenefits.map((benefit) => (
                 <tr key={benefit.id} className={styles.tableRow}>
                   <td className={styles.tableCell} data-label="Nome">
                     {benefit.name}
@@ -123,8 +133,13 @@ const BenefitsList: React.FC = () => {
           </table>
         </div>
 
-        {benefits.length === 0 && (
-          <p className={styles.emptyState}>Nenhum benefício encontrado.</p>
+        {filteredBenefits.length === 0 && !loading && (
+          <p className={styles.emptyState}>
+            {searchTerm
+              ? `Nenhum benefício encontrado para "${searchTerm}".`
+              : 'Nenhum benefício cadastrado.'
+            }
+          </p>
         )}
       </div>
     </div>

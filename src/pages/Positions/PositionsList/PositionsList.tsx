@@ -1,4 +1,3 @@
-// src/components/PositionList.tsx
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import styles from './PositionsList.module.css';
@@ -7,6 +6,7 @@ import { positionsService } from '../../../api/services/positionsService';
 
 const PositionList: React.FC = () => {
   const [positions, setPositions] = useState<Position[]>([]);
+  const [searchTerm, setSearchTerm] = useState<string>('');
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -74,11 +74,22 @@ const PositionList: React.FC = () => {
     );
   }
 
+  const filteredPositions = positions.filter((position) =>
+    position.title.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
   return (
     <div className={styles.container}>
       <div className={styles.card}>
         <div className={styles.header}>
           <h2 className={styles.title}>Lista de Cargos</h2>
+          <input
+            type="text"
+            placeholder="🔍 Buscar por nome do cargo..."
+            className={styles.searchInput}
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
           <Link to="/positions/create" className={styles.createButton}>
             Criar Novo Cargo
           </Link>
@@ -94,7 +105,7 @@ const PositionList: React.FC = () => {
               </tr>
             </thead>
             <tbody>
-              {positions.map((position) => (
+              {filteredPositions.map((position) => (
                 <tr key={position.id} className={styles.tableRow}>
                   <td className={styles.tableCell} data-label="Cargo">{position.title}</td>
                   <td className={styles.tableCell} data-label="Salário">{formatCurrency(position.salary)}</td>
@@ -118,8 +129,13 @@ const PositionList: React.FC = () => {
           </table>
         </div>
 
-        {positions.length === 0 && !loading && (
-          <p className={styles.emptyState}>Nenhum cargo encontrado.</p>
+        {filteredPositions.length === 0 && !loading && (
+          <p className={styles.emptyState}>
+            {searchTerm
+              ? `Nenhum cargo encontrado para "${searchTerm}".`
+              : 'Nenhum cargo cadastrado.'
+            }
+          </p>
         )}
       </div>
     </div>
