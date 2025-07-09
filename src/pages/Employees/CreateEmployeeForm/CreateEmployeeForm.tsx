@@ -1,14 +1,19 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom'; // Importe os hooks
 import styles from './CreateEmployeeForm.module.css';
 import { employeesService } from '../../../api/services/employeesService';
 import { positionsService } from '../../../api/services/positionsService';
 import { benefitsService } from '../../../api/services/benefitsService';
-import { Position, Benefit } from '../../../types';
+import { Position, Benefit, Employee } from '../../../types';
 
 const CreateEmployeeForm: React.FC = () => {
+  const navigate = useNavigate(); // Hook para navegar programaticamente
+  const location = useLocation(); // Hook para acessar o 'state' da navegação
+  const employeeToEdit = location.state?.employeeToEdit as Employee | null;
+
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
-
+  
   const [positionId, setPositionId] = useState<string | null>(null);
   const [positionInput, setPositionInput] = useState('');
   const [positions, setPositions] = useState<Position[]>([]);
@@ -21,6 +26,7 @@ const CreateEmployeeForm: React.FC = () => {
   const [selectedBenefits, setSelectedBenefits] = useState<Benefit[]>([]);
   const [showBenefitDropdown, setShowBenefitDropdown] = useState(false);
 
+  const [isLoading, setIsLoading] = useState(false);
   const [successMessage, setSuccessMessage] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
 
@@ -28,55 +34,50 @@ const CreateEmployeeForm: React.FC = () => {
   const benefitDropdownRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const fetchPositions = async () => {
+    const fetchAllData = async () => {
       try {
-        const allPositions = await positionsService.getAll();
+        const [allPositions, allBenefits] = await Promise.all([
+          positionsService.getAll(),
+          benefitsService.getAll(),
+        ]);
         setPositions(allPositions);
-        setFilteredPositions(allPositions);
-      } catch (error) {
-        console.error('Erro ao buscar cargos:', error);
-      }
-    };
-    const fetchBenefits = async () => {
-      try {
-        const allBenefits = await benefitsService.getAll();
         setBenefits(allBenefits);
-        setFilteredBenefits(allBenefits);
       } catch (error) {
-        console.error('Erro ao buscar benefícios:', error);
+        setErrorMessage('Falha ao carregar dados para o formulário.');
       }
     };
-    fetchPositions();
-    fetchBenefits();
+    fetchAllData();
   }, []);
 
   useEffect(() => {
-    const filtered = positions.filter(pos =>
-      pos.title.toLowerCase().includes(positionInput.toLowerCase())
-    );
-    setFilteredPositions(filtered);
+    if (employeeToEdit) {
+      setName(employeeToEdit.name);
+      setEmail(employeeToEdit.email);
+      
+      if (employeeToEdit.position) {
+        setPositionId(employeeToEdit.position.id);
+        setPositionInput(employeeToEdit.position.title);
+      }
+      
+      if (employeeToEdit.benefitIds && benefits.length > 0) {
+        const currentBenefits = benefits.filter(benefit =>
+          employeeToEdit.benefitIds.includes(benefit.id)
+        );
+        setSelectedBenefits(currentBenefits);
+      }
+    }
+  }, [employeeToEdit, benefits]);
+
+  useEffect(() => {
+    setFilteredPositions(positions.filter(pos => pos.title.toLowerCase().includes(positionInput.toLowerCase())));
   }, [positionInput, positions]);
 
   useEffect(() => {
-    const filtered = benefits.filter(ben =>
-      ben.name.toLowerCase().includes(benefitInput.toLowerCase()) &&
+    setFilteredBenefits(benefits.filter(ben => 
+      ben.name.toLowerCase().includes(benefitInput.toLowerCase()) && 
       !selectedBenefits.some(sb => sb.id === ben.id)
-    );
-    setFilteredBenefits(filtered);
+    ));
   }, [benefitInput, benefits, selectedBenefits]);
-
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (positionDropdownRef.current && !positionDropdownRef.current.contains(event.target as Node)) {
-        setShowPositionDropdown(false);
-      }
-      if (benefitDropdownRef.current && !benefitDropdownRef.current.contains(event.target as Node)) {
-        setShowBenefitDropdown(false);
-      }
-    };
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, []);
 
   const handlePositionSelect = (pos: Position) => {
     setPositionId(pos.id);
@@ -98,143 +99,104 @@ const CreateEmployeeForm: React.FC = () => {
     e.preventDefault();
     setErrorMessage('');
     setSuccessMessage('');
+    setIsLoading(true);
+
+    const payload = {
+      name,
+      email,
+      positionId: positionId || null,
+      benefitIds: selectedBenefits.map(b => b.id),
+    };
 
     try {
-      await employeesService.create({
-        name,
-        email,
-        positionId: positionId || null,
-        benefitIds: selectedBenefits.map(b => b.id),
-      });
-
-      setSuccessMessage('Funcionário cadastrado com sucesso!');
-      setName('');
-      setEmail('');
-      setPositionId(null);
-      setPositionInput('');
-      setSelectedBenefits([]);
-      setBenefitInput('');
+      if (employeeToEdit) {
+        await employeesService.update(employeeToEdit.id, payload);
+        setSuccessMessage('Funcionário atualizado com sucesso!');
+      } else {
+        await employeesService.create(payload);
+        setSuccessMessage('Funcionário cadastrado com sucesso!');
+      }
+      setTimeout(() => navigate('/employees'), 1500); // Volta para a lista após sucesso
     } catch (error) {
-      setErrorMessage('Erro ao cadastrar funcionário. Verifique os dados.');
-      setSuccessMessage('');
-      console.error(error);
+      setErrorMessage('Erro ao salvar funcionário. Verifique os dados.');
+    } finally {
+      setIsLoading(false);
     }
   };
 
   return (
     <div className={styles.container}>
       <div className={styles.card}>
-        <h2 className={styles.title}>Cadastrar Novo Funcionário</h2>
-
+        <h2 className={styles.title}>
+          {employeeToEdit ? 'Editar Funcionário' : 'Cadastrar Novo Funcionário'}
+        </h2>
         <form onSubmit={handleSubmit} className={styles.form}>
           <div className={styles.formGroup}>
             <label htmlFor="name">Nome Completo</label>
-            <input
-              type="text"
-              id="name"
-              value={name}
-              onChange={e => setName(e.target.value)}
-              placeholder="Ex: João da Silva"
-              required
-            />
+            <input type="text" id="name" value={name} onChange={e => setName(e.target.value)} required disabled={isLoading} />
           </div>
 
           <div className={styles.formGroup}>
             <label htmlFor="email">Email Corporativo</label>
-            <input
-              type="email"
-              id="email"
-              value={email}
-              onChange={e => setEmail(e.target.value)}
-              placeholder="Ex: joao.silva@empresa.com"
-              required
-            />
+            <input type="email" id="email" value={email} onChange={e => setEmail(e.target.value)} required disabled={isLoading} />
           </div>
-
-          {/* Combobox de cargos */}
+          
           <div className={`${styles.formGroup} ${styles.dropdownWrapper}`} ref={positionDropdownRef}>
             <label htmlFor="positionInput">Cargo</label>
             <input
               type="text"
               id="positionInput"
               value={positionInput}
-              onChange={e => {
-                setPositionInput(e.target.value);
-                setPositionId(null);
-                setShowPositionDropdown(true);
-              }}
+              onChange={e => { setPositionInput(e.target.value); setPositionId(null); setShowPositionDropdown(true); }}
               placeholder="Digite para buscar cargo"
               autoComplete="off"
+              disabled={isLoading}
             />
             {showPositionDropdown && filteredPositions.length > 0 && (
               <ul className={styles.dropdownList}>
                 {filteredPositions.map(pos => (
-                  <li
-                    key={pos.id}
-                    onClick={() => handlePositionSelect(pos)}
-                    onMouseDown={e => e.preventDefault()}
-                    className={styles.dropdownItem}
-                  >
+                  <li key={pos.id} onClick={() => handlePositionSelect(pos)} className={styles.dropdownItem}>
                     {pos.title}
                   </li>
                 ))}
               </ul>
             )}
-            <small className={styles.formHint}>Campo opcional</small>
           </div>
 
-          {/* Multi-select benefícios */}
           <div className={`${styles.formGroup} ${styles.dropdownWrapper}`} ref={benefitDropdownRef}>
             <label htmlFor="benefitInput">Benefícios</label>
             <input
               type="text"
               id="benefitInput"
               value={benefitInput}
-              onChange={e => {
-                setBenefitInput(e.target.value);
-                setShowBenefitDropdown(true);
-              }}
-              placeholder="Digite para buscar benefícios"
+              onChange={e => { setBenefitInput(e.target.value); setShowBenefitDropdown(true); }}
+              placeholder="Digite para buscar e adicionar benefícios"
               autoComplete="off"
+              disabled={isLoading}
             />
             {showBenefitDropdown && filteredBenefits.length > 0 && (
               <ul className={styles.dropdownList}>
-                {filteredBenefits.map(benefit => (
-                  <li
-                    key={benefit.id}
-                    onClick={() => handleAddBenefit(benefit)}
-                    onMouseDown={e => e.preventDefault()}
-                    className={styles.dropdownItem}
-                  >
-                    {benefit.name}
+                {filteredBenefits.map(ben => (
+                  <li key={ben.id} onClick={() => handleAddBenefit(ben)} className={styles.dropdownItem}>
+                    {ben.name}
                   </li>
                 ))}
               </ul>
             )}
-
-            {/* Mostrar benefícios selecionados */}
             {selectedBenefits.length > 0 && (
-              <div className={styles.selectedBenefits}>
+              <div className={styles.selectedItems}>
                 {selectedBenefits.map(b => (
-                  <span key={b.id} className={styles.selectedBenefit}>
+                  <span key={b.id} className={styles.selectedItem}>
                     {b.name}
-                    <button
-                      type="button"
-                      onClick={() => handleRemoveBenefit(b.id)}
-                      aria-label={`Remover benefício ${b.name}`}
-                      className={styles.removeBenefitButton}
-                    >
-                      ×
-                    </button>
+                    <button type="button" onClick={() => handleRemoveBenefit(b.id)} className={styles.removeItemButton} disabled={isLoading}>×</button>
                   </span>
                 ))}
               </div>
             )}
-            <small className={styles.formHint}>Campo opcional. Clique para adicionar mais de um benefício.</small>
           </div>
-
-          <button type="submit" className={styles.button}>
-            Cadastrar Funcionário
+          
+          <button type="submit" className={styles.button} disabled={isLoading}>
+            {isLoading ? 'Salvando...' : 'Salvar'}
           </button>
 
           {successMessage && <p className={`${styles.message} ${styles.success}`}>{successMessage}</p>}
