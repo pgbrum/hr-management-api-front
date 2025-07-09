@@ -1,0 +1,21 @@
+/*
+  Esta é a regra principal. Quando o elemento <html> tiver a classe 'dark',
+  nós invertemos todas as cores e giramos a matiz em 180 graus.
+  Inverter transforma branco em preto, mas também azul em laranja.
+  O 'hue-rotate' corrige isso, fazendo o laranja voltar a ser azul.
+*/
+html.dark {
+  filter: invert(1) hue-rotate(180deg);
+  transition: filter 0.3s ease; /* Animação suave */
+}
+
+/*
+  O problema: a regra acima também inverte imagens, vídeos e mapas.
+  Para corrigir, nós aplicamos o mesmo filtro novamente nesses elementos específicos.
+  Aplicar o filtro duas vezes cancela o efeito, e eles voltam ao normal.
+*/
+html.dark img,
+html.dark video,
+html.dark iframe {
+  filter: invert(1) hue-rotate(180deg);
+}

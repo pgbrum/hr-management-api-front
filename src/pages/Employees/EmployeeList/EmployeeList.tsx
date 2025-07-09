@@ -95,7 +95,7 @@ const EmployeeList: React.FC = () => {
           <h2 className={styles.title}>Lista de Funcionários</h2>
           <input
             type="text"
-            placeholder="Digite o nome ou o email do funcionário..."
+            placeholder="🔍 Buscar por info do funcionário..."
             className={styles.searchInput}
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
