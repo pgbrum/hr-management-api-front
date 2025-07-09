@@ -1,0 +1,126 @@
+.modalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.65);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  padding: 1rem;
+  box-sizing: border-box;
+}
+
+.modalCard {
+  position: relative;
+  background-color: #ffffff;
+  padding: 2.5rem;
+  border-radius: 12px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+  width: 100%;
+  max-width: 500px;
+  overflow-y: auto;
+  box-sizing: border-box;
+}
+
+.closeButton {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  background: none;
+  border: none;
+  font-size: 1.75rem;
+  color: #6e6e73;
+  cursor: pointer;
+  line-height: 1;
+}
+
+.closeButton:disabled {
+  color: #d1d5db;
+}
+
+.title, .form, .formGroup, .formGroup label, .formGroup input, .button, .message, .success, .error {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  box-sizing: border-box;
+}
+
+.title {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: #1d1d1f;
+  margin-top: 0;
+  margin-bottom: 2rem;
+  text-align: center;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.formGroup label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: #1d1d1f;
+}
+
+.formGroup input {
+  width: 100%;
+  padding: 0.8rem 1rem;
+  font-size: 1rem;
+  color: #1d1d1f;
+  background-color: #f5f5f7;
+  border: 1px solid #d2d2d7;
+  border-radius: 12px;
+  transition: border-color 200ms ease-in-out, box-shadow 200ms ease-in-out;
+  font-family: inherit;
+}
+
+.formGroup input:focus {
+  outline: none;
+  border-color: #007aff;
+  box-shadow: 0 0 0 3px #e6f2ff;
+}
+
+.button {
+  width: 100%;
+  padding: 0.9rem;
+  margin-top: 1rem;
+  background-color: #007aff;
+  color: #fff;
+  border: none;
+  border-radius: 12px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+.button:disabled {
+  background-color: #b0b0b0;
+  cursor: not-allowed;
+}
+
+.message {
+  text-align: center;
+  font-weight: 500;
+  font-size: 0.9rem;
+  padding: 0.8rem 1rem;
+  border-radius: 12px;
+  margin-top: 1rem;
+}
+
+.success {
+  background-color: #eaf9ee;
+  color: #1e853a;
+}
+
+.error {
+  background-color: #ffebed;
+  color: #c71f2f;
+}
