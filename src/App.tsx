@@ -5,6 +5,7 @@ import Header from './components/layout/Header/Header';
 import Footer from './components/layout/Footer/Footer';
 import Login from './pages/Auth/Login/Login';
 import { AppRoutes } from './Routes';
+import ScrollToTop from './components/utils/ScrollToTop';
 import './App.css'; 
 
 function App() {
@@ -21,6 +22,8 @@ function App() {
 
   return (
     <BrowserRouter>
+      <ScrollToTop />
+      
       {isAuthenticated ? (
         <div className="App">
           <Header onLogout={handleLogout} />
